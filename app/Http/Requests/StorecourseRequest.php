@@ -26,7 +26,7 @@ class StorecourseRequest extends FormRequest
             'title' => 'required|string|max:255',
             'description' => 'required|string',
             'price' => 'required|numeric',
-            //'image_path' => 'file:jpg,jpeg,png',
+            'image_path' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'discount' => 'numeric',
             'is_active' => 'boolean',
             'is_deleted' => 'boolean',

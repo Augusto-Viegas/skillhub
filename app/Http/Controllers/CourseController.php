@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\course;
-use App\Http\Requests\StorecourseRequest;
-use App\Http\Requests\UpdatecourseRequest;
+use App\Http\Requests\StoreCourseRequest;
+use App\Http\Requests\UpdateCourseRequest;
 use Inertia\Inertia;
 use App\Http\Resources\CourseResource;
 use Illuminate\Support\Facades\Auth;
@@ -37,14 +37,21 @@ class CourseController extends Controller
         return Inertia::render("Courses/Create");
     }
 
-    /**
-     * Store a newly created resource in storage.
-     * Persistir os dados do curso no banco de dados.
-     */
-    public function store(StorecourseRequest $request)
+    public function store(StoreCourseRequest $request)
     {
-        Course::create($request->all());
-        return redirect()->route("dashboard")->with("success","");
+        $user = Auth::user();
+
+        $imagePath = null;
+        if ($request->hasFile('image_path')){
+            //Create a folder for the user and store the image
+            $imagePath = $request->file('image_path')->store("users/{$user->id}/courses", 'public');
+        }
+
+        Course::create(array_merge($request->validated(),
+        ['image_path'=> $imagePath, 'instructor_id' => $user->id]
+        ));
+
+        return redirect()->route("dashboard")->with("success", "Curso criado com sucesso!");
     }
 
     /**
@@ -62,6 +69,7 @@ class CourseController extends Controller
     public function edit(course $course)
     {
         //página para editar um determinado curso
+        return Inertia::render("Courses/Edit", ["course" => new CourseResource($course)]);
     }
 
     /**

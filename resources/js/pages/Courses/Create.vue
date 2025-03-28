@@ -33,13 +33,26 @@ const form = useForm({
 });
 
 const submit = () => {
+    //converte form data para FormData
+    const formData = new FormData();
+    formData.append('instructor_id', form.instructor_id);
+    formData.append('title', form.title);
+    formData.append('description', form.description);
+    formData.append('price', form.price);
+
+    //incluir se tiver imagem
+    if(form.image_path){
+        formData.append('image_path', form.image_path);
+    }
+
     form.post(route('courses.store'), {
         onSuccess: () => {
             form.reset();
         },
         onFinish: () => {
             form.image_path = null;
-        }
+        },
+        preserveScroll: true,
     });
 };
 
